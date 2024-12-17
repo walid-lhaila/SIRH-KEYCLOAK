@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entity/users.entity';
 import { Repository } from 'typeorm';
@@ -100,7 +105,6 @@ export class UsersService {
       );
 
       console.log('HR role assigned to user in Keycloak');
-
     } catch (error) {
       console.error('Detailed error in Keycloak user creation:');
       if (error.response) {
@@ -112,7 +116,10 @@ export class UsersService {
       } else {
         console.error('Error message:', error.message);
       }
-      throw new HttpException(`Failed to create user in Keycloak: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        `Failed to create user in Keycloak: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -137,8 +144,10 @@ export class UsersService {
     return hrRole.id;
   }
 
-
-  async login(username: string, password: string): Promise<{ access_token: string; user: Users }> {
+  async login(
+    username: string,
+    password: string,
+  ): Promise<{ access_token: string; user: Users }> {
     const keycloakUrl = process.env.KEYCLOAK_URL;
     const realm = process.env.KEYCLOAK_REALM;
     const clientId = process.env.KEYCLOAK_CLIENT_ID;
@@ -172,6 +181,23 @@ export class UsersService {
         throw new UnauthorizedException('Invalid credentials');
       }
       throw new UnauthorizedException('Login failed');
+    }
+  }
+
+  async deleteUsers(email: string): Promise<{ message: string }> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+    }
+    try {
+      await this.usersRepository.remove(user);
+      return { message: 'HR Deleted Successfully' };
+    } catch (error) {
+      console.error('Error Deleting User: ', error);
+      throw new HttpException(
+        'Failed To Delete HR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

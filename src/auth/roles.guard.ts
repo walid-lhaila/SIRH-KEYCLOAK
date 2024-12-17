@@ -10,7 +10,15 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+
+    // Extract user from RPC context
+    const rpcContext = context.switchToRpc();
+    const user = rpcContext.getContext()?.user;
+
+    if (!user || !user.roles) {
+      return false; // No user or roles, deny access
+    }
+
+    return requiredRoles.some((role) => user.roles.includes(role));
   }
 }

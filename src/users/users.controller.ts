@@ -1,26 +1,40 @@
-import { Body, Controller, Post, UseGuards, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  Body,
+  Controller,
+  UseGuards,
+  UnauthorizedException,
+  InternalServerErrorException,
+  Param,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Users } from './entity/users.entity';
-import { UsersDto } from './dto/users.dto';
-
-
-
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CustomAuthGuard } from '../auth/custom-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('create')
-  @UseGuards(AuthGuard('keycloak'), RolesGuard)
+  @MessagePattern({ cmd: 'createHR' })
+  @UseGuards(CustomAuthGuard, RolesGuard)
   @Roles('Administrator')
-  createUsers(@Body() userDto: UsersDto): Promise<Users> {
-    return this.usersService.createUsers(userDto);
+  createUsers(@Payload() data: any): Promise<Users> {
+    return this.usersService.createUsers(data.payload);
   }
 
-  @Post('login')
+  @MessagePattern({ cmd: 'deleteHR' })
+  @UseGuards(CustomAuthGuard, RolesGuard)
+  @Roles('Administrator')
+  async deleteUsers(
+    data: {email: string }
+  ): Promise<{ message: string }> {
+    const { email } = data;
+    return this.usersService.deleteUsers(email);
+  }
+
+  @MessagePattern({ cmd: 'login' })
   async login(@Body() body: { username: string; password: string }) {
     const { username, password } = body;
     if (!username || !password) {
