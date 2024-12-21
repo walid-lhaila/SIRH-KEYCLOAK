@@ -5,16 +5,18 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 dotenv.config();
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>( AppModule, {
-    transport: Transport.TCP,
-    options: {
-      host: '127.0.0.1',
-      port: 3000
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.TCP,
+      options: {
+        host: '127.0.0.1',
+        port: 6000,
+      },
     },
-  });
+  );
 
   await app.listen();
-  console.log('API Gateway is running on: http://localhost:3000');
-
+  console.log('EMPLOYEE SERVICE is running on: http://localhost:6000');
 }
 bootstrap();

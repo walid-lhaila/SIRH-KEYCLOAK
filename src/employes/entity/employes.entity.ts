@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Users {
+export class Employes {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,4 +22,13 @@ export class Users {
 
   @Column()
   role: string;
+
+  @Column()
+  poste: string;
+
+  @Column()
+  departement: string;
+
+  @Column()
+  dateEmbouche: Date;
 }

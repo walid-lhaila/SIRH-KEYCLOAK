@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class UsersDto {
+export class EmployesDto {
   @IsString()
   @IsNotEmpty()
   firstName: string;
@@ -23,4 +23,16 @@ export class UsersDto {
 
   @IsString()
   role: string;
+
+  @IsString()
+  @IsNotEmpty()
+  poste: string;
+
+  @IsString()
+  @IsNotEmpty()
+  departement: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  dateEmbouche: Date;
 }

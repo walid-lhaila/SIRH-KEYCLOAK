@@ -13,7 +13,7 @@ export class CustomAuthGuard implements CanActivate {
     const rpcContext = context.switchToRpc();
     const data = rpcContext.getData();
 
-    const token = data.token?.split(' ')[1]; // Remove 'Bearer' prefix
+    const token = data.token?.split(' ')[1];
     if (!token) {
       console.log('No token provided');
       return false;
